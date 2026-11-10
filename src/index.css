@@ -1,0 +1,69 @@
+/* Font dimuat lokal lewat @fontsource (src/main.tsx) agar tetap jalan tanpa internet */
+
+/* =========================================================
+   Tailwind base layers
+   ========================================================= */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   CSS Custom Properties — Pythagoras Academic Luxury Theme
+   ========================================================= */
+:root {
+  --bg-base:           #F8FAFC;
+  --bg-panel:          #FFFFFF;
+  --surface-container: #F1F5F9;
+  --surface-elevated:  #FFFFFF;
+  --ink:               #0F172A;
+  --paper-text:        #0F172A;
+  --gold:              #D97706;
+  --gold-soft:         #FCD34D;
+  --muted-line:        #E2E8F0;
+  --right:             #0D9488;
+  --wrong:             #DC2626;
+}
+
+/* =========================================================
+   Global base styles
+   ========================================================= */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--paper-text);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* =========================================================
+   Utility shorthand layer
+   ========================================================= */
+@layer utilities {
+  .font-heading {
+    font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.5);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 138, 0.2);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 58, 138, 0.4);
+  }
+}

@@ -68,6 +68,7 @@ export const defaultQuizConfig: QuizConfig = {
   shuffleQuestions: true,
   showLiveRanking: true,
   soundEffects: true,
+  buzzerMode: false,
 }
 
 // ============================================================

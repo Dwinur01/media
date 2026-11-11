@@ -25,6 +25,8 @@ export type Action =
   | { type: 'START_GAME' }
   | { type: 'SET_PHASE'; phase: GamePhase }
   | { type: 'REVEAL'; records: AnswerRecord[] }
+  | { type: 'RECORD_ATTEMPT'; record: AnswerRecord }
+  | { type: 'LOAD_STATE'; state: GameState }
   | { type: 'TOGGLE_ANSWER'; teamId: string; questionId: string }
   | { type: 'NEXT_QUESTION' }
   | { type: 'END_GAME' }
@@ -75,6 +77,19 @@ export function gameReducer(state: GameState, action: Action): GameState {
         scores: computeScores(state.teams, answers, state.config),
       }
     }
+
+    case 'RECORD_ATTEMPT': {
+      // Mode Rebutan: satu percobaan menjawab (tanpa mengubah fase)
+      const r = action.record
+      const answers = [
+        ...state.answers.filter((a) => !(a.teamId === r.teamId && a.questionId === r.questionId)),
+        r,
+      ]
+      return { ...state, answers, scores: computeScores(state.teams, answers, state.config) }
+    }
+
+    case 'LOAD_STATE':
+      return action.state
 
     case 'TOGGLE_ANSWER': {
       const answers = state.answers.map((a) =>

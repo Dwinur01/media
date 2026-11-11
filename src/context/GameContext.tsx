@@ -2,7 +2,9 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useReducer,
+  useState,
   useCallback,
   type ReactNode,
 } from 'react'
@@ -14,6 +16,9 @@ import type {
   QuizConfig,
   AnswerRecord,
 } from '../types'
+import { defaultQuizConfig, sampleQuestions } from '../data/questions'
+import { clearSession, isResumable, loadSession, saveSession, summarizeSession } from '../utils'
+import type { SessionSummary } from '../utils'
 import { createInitialState, gameReducer } from './gameReducer'
 
 interface GameContextValue {
@@ -27,9 +32,15 @@ interface GameContextValue {
   revealAnswers: (records: AnswerRecord[]) => void
   /** Guru membalik penilaian benar/salah satu kelompok */
   toggleAnswer: (teamId: string, questionId: string) => void
+  /** Mode Rebutan: catat satu percobaan menjawab tanpa menutup soal */
+  recordAttempt: (record: AnswerRecord) => void
   nextQuestion: () => void
   endGame: () => void
   resetGame: () => void
+  /** Ringkasan sesi tersimpan (null jika tidak ada) */
+  savedSession: SessionSummary | null
+  resumeGame: () => void
+  discardSavedGame: () => void
 }
 
 const GameContext = createContext<GameContextValue | null>(null)
@@ -38,6 +49,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, undefined, () => createInitialState())
 
   const currentQuestion = state.questions[state.currentQuestionIndex] ?? null
+
+  // Sesi tersimpan dibaca sekali saat aplikasi dibuka; guru memilih lanjut atau buang.
+  const [pending, setPending] = useState(() => loadSession(sampleQuestions, defaultQuizConfig))
+
+  // Simpan otomatis selama permainan; hapus ketika selesai. Di layar setup tidak menyentuh apa pun.
+  useEffect(() => {
+    if (isResumable(state.phase)) {
+      saveSession(state)
+      setPending(null)
+    } else if (state.phase === 'result') {
+      clearSession()
+    }
+  }, [state])
 
   const setTeams = useCallback((teams: Team[]) => dispatch({ type: 'SET_TEAMS', teams }), [])
   const setConfig = useCallback(
@@ -54,6 +78,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     (teamId: string, questionId: string) => dispatch({ type: 'TOGGLE_ANSWER', teamId, questionId }),
     [],
   )
+  const recordAttempt = useCallback(
+    (record: AnswerRecord) => dispatch({ type: 'RECORD_ATTEMPT', record }),
+    [],
+  )
+  const resumeGame = useCallback(() => {
+    if (!pending) return
+    dispatch({ type: 'LOAD_STATE', state: pending.state })
+    setPending(null)
+  }, [pending])
+  const discardSavedGame = useCallback(() => {
+    clearSession()
+    setPending(null)
+  }, [])
   const nextQuestion = useCallback(() => dispatch({ type: 'NEXT_QUESTION' }), [])
   const endGame = useCallback(() => dispatch({ type: 'END_GAME' }), [])
   const resetGame = useCallback(() => dispatch({ type: 'RESET_GAME' }), [])
@@ -67,9 +104,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setPhase,
     revealAnswers,
     toggleAnswer,
+    recordAttempt,
     nextQuestion,
     endGame,
     resetGame,
+    savedSession: pending ? summarizeSession(pending) : null,
+    resumeGame,
+    discardSavedGame,
   }
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>

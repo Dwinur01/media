@@ -64,4 +64,33 @@ describe('gameReducer', () => {
     expect(s.phase).toBe('setup')
     expect(s.answers).toEqual([])
   })
+
+  it('RECORD_ATTEMPT (rebutan): hanya yang menjawab dihitung; fase tidak berubah; yang diam tidak kehilangan streak', () => {
+    let s = started()
+    // soal 1: A benar, B benar
+    s = gameReducer(s, { type: 'REVEAL', records: [rec('a', 'q1', true), rec('b', 'q1', true)] })
+    s = gameReducer(s, { type: 'NEXT_QUESTION' })
+    // soal 2 (rebutan): B salah dulu, lalu A benar
+    s = gameReducer(s, { type: 'RECORD_ATTEMPT', record: rec('b', 'q2', false) })
+    expect(s.phase).toBe('reading')
+    expect(s.scores[1].wrongAnswers).toBe(1)
+    s = gameReducer(s, { type: 'REVEAL', records: [rec('a', 'q2', true)] })
+    expect(s.phase).toBe('reveal')
+    expect(s.answers.filter((a) => a.questionId === 'q2').length).toBe(2)
+    expect(s.scores[0]).toMatchObject({ score: 10 + 12, streak: 2 })
+    expect(s.scores[1]).toMatchObject({ score: 10, streak: 0 })
+  })
+
+  it('REVEAL([]) menutup soal tanpa menambah jawaban (waktu habis di rebutan)', () => {
+    let s = started()
+    s = gameReducer(s, { type: 'REVEAL', records: [] })
+    expect(s.phase).toBe('reveal')
+    expect(s.answers).toEqual([])
+  })
+
+  it('LOAD_STATE mengganti seluruh state', () => {
+    const saved = started({ questionsPerRound: 3 })
+    const s = gameReducer(createInitialState(), { type: 'LOAD_STATE', state: saved })
+    expect(s).toBe(saved)
+  })
 })

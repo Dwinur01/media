@@ -21,7 +21,7 @@ const DEFAULT_TEAMS_DATA = [
 ]
 
 export function SetupScreen() {
-  const { setTeams, setConfig, startGame } = useGame()
+  const { setTeams, setConfig, startGame, savedSession, resumeGame, discardSavedGame } = useGame()
 
   // Form states
   const [groupCount, setGroupCount] = useState<number>(4)
@@ -31,6 +31,7 @@ export function SetupScreen() {
   const [streakBonus, setStreakBonus] = useState<boolean>(true)
   const [liveRanking, setLiveRanking] = useState<boolean>(true)
   const [soundEffects, setSoundEffects] = useState<boolean>(true)
+  const [buzzerMode, setBuzzerMode] = useState<boolean>(false)
 
   const [teamNames, setTeamNames] = useState<string[]>(
     DEFAULT_TEAMS_DATA.map((t) => t.name)
@@ -66,6 +67,7 @@ export function SetupScreen() {
       bonusStreak: streakBonus ? defaultQuizConfig.bonusStreak : 0,
       showLiveRanking: liveRanking,
       soundEffects,
+      buzzerMode,
     })
     startGame()
   }
@@ -144,6 +146,39 @@ export function SetupScreen() {
 
       {/* Main Workspace Area (12-Column Arena Grid) */}
       <main className="flex-1 w-full px-6 lg:px-16 py-8 max-w-[1920px] mx-auto flex flex-col justify-start">
+        {savedSession && (
+          <div
+            role="region"
+            aria-label="Permainan tersimpan"
+            className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-brass-soft border border-gold/40 rounded-lg px-5 py-4"
+          >
+            <div>
+              <p className="font-heading text-lg text-brass-text font-semibold leading-tight">
+                Ada permainan yang belum selesai
+              </p>
+              <p className="text-xs text-brass-text/80 mt-0.5">
+                Soal {savedSession.questionNumber} dari {savedSession.totalQuestions} · {savedSession.teamCount} tim ·
+                disimpan {new Date(savedSession.savedAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={discardSavedGame}
+                className="px-4 py-2 text-sm border border-gold/50 text-brass-text rounded hover:bg-white/60 transition-colors"
+              >
+                Buang
+              </button>
+              <button
+                type="button"
+                onClick={resumeGame}
+                className="px-5 py-2 text-sm font-semibold bg-navy text-white rounded hover:bg-navy-hover focus:ring-2 focus:ring-brass focus:ring-offset-2 transition-colors"
+              >
+                Lanjutkan Permainan
+              </button>
+            </div>
+          </div>
+        )}
         {/* Arena Header Title */}
         <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-muted-line pb-5 gap-4">
           <div>
@@ -344,7 +379,7 @@ export function SetupScreen() {
                 </div>
 
                 {/* Quick Settings Architectural Checkboxes */}
-                <div className="pt-2 border-t border-muted-line grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="pt-2 border-t border-muted-line grid grid-cols-1 md:grid-cols-3 gap-3">
                   <label className="flex items-start gap-2.5 p-3 bg-surface-container border border-muted-line rounded hover:border-navy/40 cursor-pointer transition-colors">
                     <input
                       type="checkbox"
@@ -362,13 +397,26 @@ export function SetupScreen() {
                   <label className="flex items-start gap-2.5 p-3 bg-surface-container border border-muted-line rounded hover:border-navy/40 cursor-pointer transition-colors">
                     <input
                       type="checkbox"
+                      checked={buzzerMode}
+                      onChange={(e) => setBuzzerMode(e.target.checked)}
+                      className="mt-0.5 accent-navy w-4 h-4 rounded"
+                    />
+                    <div>
+                      <span className="text-xs font-semibold text-ink block leading-tight">Mode Rebutan</span>
+                      <span className="text-[10px] text-ink/50">Tercepat menekan buzzer yang menjawab</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-3 bg-surface-container border border-muted-line rounded hover:border-navy/40 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
                       checked={soundEffects}
                       onChange={(e) => setSoundEffects(e.target.checked)}
                       className="mt-0.5 accent-navy w-4 h-4 rounded"
                     />
                     <div>
                       <span className="text-xs font-semibold text-ink block leading-tight">Efek Audio Bel</span>
-                      <span className="text-[10px] text-ink/50">Bunyi bel saat waktu habis</span>
+                      <span className="text-[10px] text-ink/50">Bunyi bel &amp; buzzer</span>
                     </div>
                   </label>
                 </div>

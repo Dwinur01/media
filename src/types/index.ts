@@ -86,8 +86,10 @@ export interface QuizConfig {
   shuffleQuestions: boolean
   /** Tampilkan papan peringkat selama permainan */
   showLiveRanking: boolean
-  /** Bunyi bel saat waktu habis */
+  /** Bunyi bel saat waktu habis / buzzer */
   soundEffects: boolean
+  /** Mode Rebutan: kelompok berebut menekan buzzer, tercepat yang menjawab */
+  buzzerMode: boolean
 }
 
 export interface GameState {

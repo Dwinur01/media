@@ -49,4 +49,13 @@ export function ordinal(n: number): string {
 export { calcScoreDelta, computeScores } from './scoring'
 export { isAnswerCorrect, normalizeAnswer } from './grading'
 export { sanitizeSvg } from './sanitizeSvg'
-export { playBell } from './sound'
+export { playBell, playBuzz } from './sound'
+export {
+  saveSession,
+  loadSession,
+  clearSession,
+  summarizeSession,
+  isResumable,
+  type SessionSummary,
+} from './persistence'
+export { keyForIndex, indexForKey } from './buzzer'

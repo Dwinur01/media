@@ -1,27 +1,36 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useGame } from '../../context/GameContext'
 import { useCountdown } from '../../hooks/useCountdown'
-import { isAnswerCorrect, playBell } from '../../utils'
+import { indexForKey, isAnswerCorrect, playBell, playBuzz } from '../../utils'
 import { BankSoalModal } from '../shared'
 import { GameHeader } from './GameHeader'
 import { QuestionCard } from './QuestionCard'
 import { TimerCard } from './TimerCard'
 import { GroupsPanel } from './GroupsPanel'
 import { AnswerGrid } from './AnswerGrid'
+import { BuzzerPanel } from './BuzzerPanel'
 import { RevealPanel } from './RevealPanel'
 import { LeaderboardPanel } from './LeaderboardPanel'
 import type { Group, AnswerInput, AnswerRecord } from '../../types'
 
 export function GameScreen() {
-  const { state, currentQuestion, setPhase, revealAnswers, toggleAnswer, nextQuestion } = useGame()
+  const { state, currentQuestion, setPhase, revealAnswers, recordAttempt, toggleAnswer, nextQuestion } = useGame()
 
   const [showBankSoal, setShowBankSoal] = useState(false)
   // draf ketikan kelompok; baru dinilai saat "Periksa Jawaban"
   const [groupAnswers, setGroupAnswers] = useState<Record<string, string>>({})
+  // Mode Rebutan: kelompok yang sedang memegang giliran + ketikan jawabannya
+  const [buzzedId, setBuzzedId] = useState<string | null>(null)
+  const [buzzText, setBuzzText] = useState('')
 
   const totalQuestions = state.questions.length
   const qIndex = state.currentQuestionIndex
   const revealed = state.phase === 'reveal'
+  const buzzer = state.config.buzzerMode
+  // kelompok yang sudah mencoba pada soal ini (gugur di Mode Rebutan)
+  const attemptedIds = state.answers
+    .filter((a) => a.questionId === currentQuestion?.id)
+    .map((a) => a.teamId)
   const limit = currentQuestion?.timeLimit ?? state.config.defaultTimeLimit
 
   const { timeLeft, running, start, pause, toggle, reset, getRemainingMs } = useCountdown(
@@ -49,7 +58,24 @@ export function GameScreen() {
     pause()
     reset(limit)
     setGroupAnswers({})
+    setBuzzedId(null)
+    setBuzzText('')
   }, [currentQuestion?.id, limit, pause, reset])
+
+  // Tombol angka 1–9 (0 = tim ke-10) sebagai buzzer
+  useEffect(() => {
+    if (!buzzer || state.phase !== 'answering' || buzzedId) return
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return
+      const idx = indexForKey(e.key)
+      const team = idx === null ? undefined : state.teams[idx]
+      if (team) handleBuzz(team.id)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
 
   function handleStartAnswering() {
     setPhase('answering')
@@ -66,6 +92,13 @@ export function GameScreen() {
     const elapsed = Math.round(limit * 1000 - getRemainingMs())
     pause()
     if (expired && state.config.soundEffects) playBell()
+    setBuzzedId(null)
+
+    if (buzzer) {
+      // Rebutan: hanya kelompok yang sudah mencoba punya catatan; sisanya tidak menjawab
+      revealAnswers([])
+      return
+    }
 
     const records: AnswerRecord[] = state.teams.map((team) => {
       const text = groupAnswers[team.id] ?? ''
@@ -80,6 +113,45 @@ export function GameScreen() {
     revealAnswers(records)
   }
 
+  function handleBuzz(teamId: string) {
+    if (state.phase !== 'answering' || buzzedId || attemptedIds.includes(teamId)) return
+    pause()
+    setBuzzedId(teamId)
+    setBuzzText('')
+    if (state.config.soundEffects) playBuzz()
+  }
+
+  function handleCancelBuzz() {
+    setBuzzedId(null)
+    setBuzzText('')
+    start()
+  }
+
+  function handleJudge(correct: boolean) {
+    if (!currentQuestion || !buzzedId) return
+    const record: AnswerRecord = {
+      teamId: buzzedId,
+      questionId: currentQuestion.id,
+      answerText: buzzText.trim() || '(jawaban lisan)',
+      isCorrect: correct,
+      timeMs: Math.round(limit * 1000 - getRemainingMs()),
+    }
+    const othersLeft = state.teams.some((t) => t.id !== buzzedId && !attemptedIds.includes(t.id))
+    setBuzzedId(null)
+    setBuzzText('')
+    if (correct || !othersLeft) {
+      revealAnswers([record]) // soal selesai (timer sudah dijeda saat buzz)
+    } else {
+      recordAttempt(record) // kelompok ini gugur, yang lain boleh merebut
+      start()
+    }
+  }
+
+  function handleCheckTyped() {
+    if (!currentQuestion || !buzzText.trim()) return
+    handleJudge(isAnswerCorrect(currentQuestion, buzzText))
+  }
+
   if (!currentQuestion) return null
 
   // Hasil benar/salah di layar diambil dari record yang sama dengan yang dipakai skor
@@ -88,10 +160,11 @@ export function GameScreen() {
     const record = state.answers.find(
       (a) => a.teamId === team.id && a.questionId === currentQuestion.id,
     )
+    const noAnswer = revealed && !record
     inputsForGrid[team.id] = {
       groupId: team.id,
-      value: groupAnswers[team.id] ?? '',
-      isCorrect: revealed ? (record?.isCorrect ?? false) : null,
+      value: noAnswer ? '— tidak menjawab —' : (groupAnswers[team.id] ?? record?.answerText ?? ''),
+      isCorrect: revealed ? (record?.isCorrect ?? null) : null,
       overridden: record?.overridden,
     }
   })
@@ -99,7 +172,11 @@ export function GameScreen() {
   const correctNow = Object.values(inputsForGrid).filter((i) => i.isCorrect === true).length
   const statusMessage =
     state.phase === 'answering'
-      ? 'Waktu menjawab dimulai.'
+      ? buzzedId
+        ? `${state.teams.find((t) => t.id === buzzedId)?.name ?? 'Kelompok'} menekan buzzer.`
+        : buzzer
+          ? 'Buzzer terbuka.'
+          : 'Waktu menjawab dimulai.'
       : revealed
         ? `Jawaban diperiksa. ${correctNow} dari ${state.teams.length} kelompok benar.`
         : `Soal ${qIndex + 1} dari ${totalQuestions}. Baca soal terlebih dahulu.`
@@ -139,7 +216,7 @@ export function GameScreen() {
                 onClick={handleStartAnswering}
                 className="flex items-center gap-2 px-7 py-3 bg-navy hover:bg-navy-hover text-white h-[44px] focus:ring-2 focus:ring-brass focus:ring-offset-2 font-body font-semibold text-sm uppercase tracking-widest transition-all duration-200"
               >
-                Mulai Menjawab
+                {buzzer ? 'Buka Buzzer' : 'Mulai Menjawab'}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -147,7 +224,22 @@ export function GameScreen() {
             </div>
           )}
 
-          {(state.phase === 'answering' || revealed) && (
+          {state.phase === 'answering' && buzzer && (
+            <BuzzerPanel
+              groups={groups}
+              lockedIds={attemptedIds}
+              buzzedId={buzzedId}
+              answerText={buzzText}
+              onAnswerTextChange={setBuzzText}
+              onBuzz={handleBuzz}
+              onCancel={handleCancelBuzz}
+              onCheckTyped={handleCheckTyped}
+              onJudge={handleJudge}
+              onEndQuestion={() => handleReveal(false)}
+            />
+          )}
+
+          {((state.phase === 'answering' && !buzzer) || revealed) && (
             <div className="bg-white border border-muted-line p-6 sm:p-8 shadow-sm rounded-lg">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-px h-4 bg-navy" />

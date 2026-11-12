@@ -1,69 +1,129 @@
-# Kuis Kelompok Pythagoras
+# 📐 Kuis Kelompok Pythagoras
 
-Game kuis kelas interaktif tentang Teorema Pythagoras. Satu perangkat (misalnya diproyeksikan) dipakai bersama
-oleh 2–12 kelompok; guru mengendalikan jalannya soal.
+> Kuis kelas yang seru, interaktif, dan bikin Teorema Pythagoras nggak lagi bikin ngantuk! 🎉
 
-**Stack:** React 18 · Vite 5 · TypeScript · Tailwind CSS 3 · Vitest
+Halo! 👋 Ini adalah game kuis buat seisi kelas dengan topik **Teorema Pythagoras**. Cukup satu perangkat (laptop yang diproyeksikan ke layar, misalnya), lalu **2–12 kelompok** bisa bertanding bareng. Guru jadi "host" yang memegang kendali jalannya soal. Skor, timer, papan peringkat, sampai pembahasan semuanya jalan otomatis. Tinggal fokus seru-seruan!
 
-## Menjalankan
+## ✨ Fitur Unggulan
+
+- 👥 **2–12 kelompok** dalam satu layar, dibedakan warna dan nomor
+- ⏱️ **Timer** yang bisa dijeda dan diatur ulang
+- 🤖 **Penilaian otomatis yang pintar**: jawaban `10`, `10 cm`, `c = 10`, atau `8 akar 2` sama-sama dikenali
+- ✏️ **Koreksi guru**: salah nilai? Tinggal klik *Ubah ke Benar/Salah*, skor langsung dihitung ulang
+- 🔥 **Bonus streak** kalau kelompok benar beruntun
+- ⚡ **Mode Rebutan** ala cerdas cermat, pakai buzzer (tombol angka **1–9** dan **0**)
+- 🏆 **Podium juara** dan klasemen lengkap di akhir permainan
+- 📚 **Bank 50 soal** dalam 5 kategori, bisa dicari dan disaring
+- 💾 **Simpan otomatis**: browser tertutup di tengah permainan? Tenang, bisa lanjut lagi
+- 🔊 Efek bunyi bel dan tampilan yang nyaman dibaca lewat proyektor
+
+## 🧰 Dibangun Dengan
+
+React 18 · Vite 5 · TypeScript · Tailwind CSS 3 · Vitest
+
+## 🚀 Cara Menjalankan
+
+**Yang perlu disiapkan:** [Node.js](https://nodejs.org) versi 18 ke atas dan Git.
+
 ```bash
+# 1. Clone dulu repo-nya
+git clone https://github.com/Dwinur01/media.git
+
+# 2. Masuk ke foldernya
+cd media
+
+# 3. Install semua kebutuhannya
 npm install
-npm run dev       # pengembangan
-npm run build     # typecheck + build produksi
-npm run lint      # ESLint
-npm test          # unit test + tes alur UI
+
+# 4. Jalankan!
+npm run dev
 ```
 
-## Cara bermain
-1. **Setup** — atur tim, durasi, jumlah soal, poin, lalu *Mulai Game Kuis*.
-2. **Baca soal** → *Mulai Menjawab* (timer berjalan; bisa dijeda/diatur ulang).
-3. Tiap kelompok mengetik jawaban. *Periksa Jawaban* (atau waktu habis) menilai semua kelompok sekaligus.
-4. Guru dapat menekan **Ubah ke Benar/Salah** pada kelompok mana pun; skor dan streak dihitung ulang otomatis.
-5. *Soal Berikutnya* … sampai *Lihat Hasil* (podium + klasemen).
+Setelah itu buka alamat yang muncul di terminal (biasanya `http://localhost:5173`) dan kuis siap dimainkan. 🎮
 
-## Mode Rebutan
-Aktifkan di Setup (*Mode Rebutan*). Alurnya:
-1. *Buka Buzzer* — timer berjalan, semua kelompok boleh menekan.
-2. Kelompok tercepat menekan tombolnya (atau angka **1–9**, **0** = tim ke-10; tim 11–12 lewat klik). Timer berhenti.
-3. Guru mengetik jawaban lalu *Periksa Ketikan*, atau menilai jawaban lisan dengan *Tandai Benar/Salah*.
-4. **Benar** → poin untuk kelompok itu, soal selesai. **Salah** → kelompok itu gugur untuk soal ini, timer lanjut, kelompok lain boleh merebut.
-5. Semua gugur, waktu habis, atau *Tutup Soal* → pembahasan. Kelompok yang tidak menjawab tidak dihitung salah dan streaknya tidak putus.
+### Perintah lain yang berguna
 
-*Batal (salah pencet)* mengembalikan buzzer tanpa menggugurkan. Koreksi guru (*Ubah ke Benar/Salah*) tetap tersedia setelah pembahasan.
+| Perintah | Fungsinya |
+|---|---|
+| `npm run dev` | Jalankan mode pengembangan |
+| `npm run build` | Cek tipe, lalu bikin versi produksi |
+| `npm run preview` | Coba hasil build di lokal |
+| `npm run lint` | Cek kerapian kode dengan ESLint |
+| `npm test` | Jalankan semua tes |
 
-## Simpan otomatis
-Selama permainan berjalan, sesi disimpan ke `localStorage` (hanya id soal, tim, jawaban, dan pengaturan; skor dihitung ulang).
-Saat halaman dibuka lagi muncul banner **Lanjutkan Permainan / Buang**. Soal yang sedang berjalan kembali ke fase baca
-(timer tidak bisa dilanjutkan persis); fase pembahasan dipulihkan lengkap dengan jawaban dan penilaiannya.
-Sesi dihapus otomatis saat permainan selesai. Data rusak atau dari versi lain diabaikan.
+## 🎮 Cara Bermain
 
-## Aturan penilaian (`src/utils/grading.ts`)
-Satu fungsi `isAnswerCorrect(question, teks)` dipakai untuk skor **dan** warna di layar. Jawaban diterima bila:
-- sama dengan kunci / variasi jawaban, tanpa membedakan huruf besar-kecil, spasi, tanda hubung, atau titik di akhir;
-- huruf opsi yang benar (A–D), atau teks opsi yang benar;
-- angka dengan nilai sama, dengan/tanpa satuan ukur: `10`, `10 cm`, `10,0`, `c = 10`;
-- bentuk akar: `8√2`, `8 akar 2`, `8*√2`, `sqrt(2)`; kata: `segitiga siku-siku`, `iya`.
+1. **Setup**: atur jumlah dan nama kelompok, durasi, jumlah soal, dan poin, lalu klik *Mulai Game Kuis*.
+2. **Baca soal**, lalu klik *Mulai Menjawab*. Timer langsung jalan.
+3. Tiap kelompok mengetik jawabannya. Klik *Periksa Jawaban* (atau tunggu waktu habis) dan semua kelompok dinilai sekaligus.
+4. Kalau ada penilaian yang kurang pas, guru bisa menekan **Ubah ke Benar/Salah**.
+5. Lanjut *Soal Berikutnya* sampai *Lihat Hasil* untuk melihat podium juara. 🏆
 
-Satuan ukur dibuat longgar (10 m dianggap sama dengan 10 cm); gunakan koreksi guru bila perlu lebih ketat.
+### ⚡ Mode Rebutan
 
-Skor: `pointsPerCorrect` per jawaban benar + bonus streak (`bonusStreak × ⌊streak/2⌋` mulai streak ke-2).
-Skor selalu **dihitung ulang dari daftar jawaban** (`src/utils/scoring.ts`), sehingga koreksi manual konsisten.
+Aktifkan lewat pengaturan di layar Setup:
 
-## Struktur
+1. Guru menekan *Buka Buzzer*, dan semua kelompok boleh berebut.
+2. Kelompok tercepat menekan tombolnya (atau angka **1–9**, **0** untuk tim ke-10). Timer berhenti.
+3. Jawaban dinilai: **benar** berarti poin untuk kelompok itu dan soal selesai, **salah** berarti kelompok itu gugur dan yang lain boleh merebut.
+4. Salah pencet? Pakai tombol *Batal* supaya buzzer kembali tanpa ada yang gugur.
+
+## 🛠️ Mau Ikut Memperbaiki? Yuk Clone!
+
+Kamu menemukan bug, mau menambah soal, atau punya ide fitur baru? Mantap! Begini caranya:
+
+1. **Fork** repo ini lewat tombol *Fork* di GitHub (opsional, tapi disarankan kalau kamu bukan pemilik repo).
+2. **Clone** ke komputermu:
+   ```bash
+   git clone https://github.com/Dwinur01/media.git
+   cd media
+   npm install
+   ```
+3. **Buat branch baru** supaya rapi:
+   ```bash
+   git checkout -b perbaikan-keren
+   ```
+4. **Ubah kodenya** sesukamu, lalu pastikan semuanya aman:
+   ```bash
+   npm run lint
+   npm test
+   ```
+5. **Commit dan push:**
+   ```bash
+   git add .
+   git commit -m "Jelaskan perbaikanmu di sini"
+   git push origin perbaikan-keren
+   ```
+6. Buka GitHub dan buat **Pull Request**. Nanti kita lihat bareng-bareng! 🙌
+
+### ➕ Menambah Soal Baru
+
+Tambahkan satu objek ke `questions` di `src/data/questions.ts` (isi `id` yang unik, `answer`, `options`, dan `correctOptionId`). Tes otomatis akan memeriksa apakah kunci jawabannya dinilai benar dan opsi yang salah dinilai salah.
+
+## 🗂️ Struktur Folder
+
 ```
 src/
-  components/{setup,game,result,shared}   UI per layar
-  context/        gameReducer.ts (logika murni) + GameContext.tsx (provider & hook)
-  hooks/          useCountdown (timer berbasis jam sistem)
-  utils/          grading, scoring, persistence, buzzer, sanitizeSvg, sound
-  data/           questions.ts (bank 50 soal, 5 kategori)
-  types/          index.ts (satu-satunya sumber tipe)
+  components/   # Tampilan: setup, game, result, shared
+  context/      # Logika game (gameReducer) + provider
+  hooks/        # useCountdown (timer)
+  utils/        # Penilaian, skor, simpan otomatis, buzzer, suara
+  data/         # Bank 50 soal
+  types/        # Definisi tipe TypeScript
 ```
 
-## Menambah soal
-Tambahkan objek ke `questions` di `src/data/questions.ts` (id unik, `answer`, `options`, `correctOptionId`).
-Tes `grading.test.ts` otomatis memeriksa bahwa kunci, variasi, huruf & teks opsi benar dinilai **benar**
-dan opsi salah dinilai **salah** untuk setiap soal.
+Detail tampilan dan warna ada di [`DESIGN.md`](./DESIGN.md).
 
-## Keamanan
-Ilustrasi SVG dipasang lewat `dangerouslySetInnerHTML`, tetapi selalu dibersihkan dengan DOMPurify (`sanitizeSvg`).
+## 💡 Catatan Kecil
+
+- **Penilaian satuan itu longgar.** `10 m` dianggap sama dengan `10 cm`. Kalau butuh lebih ketat, pakai fitur koreksi guru.
+- **Soal yang sedang berjalan** akan kembali ke fase baca saat sesi dilanjutkan, karena timer tidak bisa dilanjutkan persis.
+- **Aman dari kode jahil.** Ilustrasi SVG selalu dibersihkan dengan DOMPurify sebelum ditampilkan.
+
+## 👤 Pembuat
+
+Dibuat dengan ☕ oleh [@Dwinur01](https://github.com/Dwinur01)
+
+---
+
+⭐ Kalau proyek ini berguna buat kelasmu, jangan lupa kasih bintang ya!

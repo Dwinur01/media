@@ -17,8 +17,8 @@
   --surface-elevated:  #FFFFFF;
   --ink:               #0F172A;
   --paper-text:        #0F172A;
-  --gold:              #D97706;
-  --gold-soft:         #FCD34D;
+  --gold:              #0369A1;
+  --gold-soft:         #7DD3FC;
   --muted-line:        #E2E8F0;
   --right:             #0D9488;
   --wrong:             #DC2626;
@@ -65,5 +65,57 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(30, 58, 138, 0.4);
+  }
+}
+
+/* =========================================================
+   Aksesibilitas & interaksi
+   ========================================================= */
+:focus-visible {
+  outline: 2px solid #0284C7;
+  outline-offset: 2px;
+}
+
+/* Slider dengan thumb besar agar mudah disentuh (proyektor / smartboard / HP) */
+.range-navy {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  background: #E2E8F0;
+  cursor: pointer;
+}
+.range-navy::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: #1E3A8A;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.35);
+}
+.range-navy::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #1E3A8A;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.35);
+}
+.range-navy:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #0284C7;
+  outline-offset: 2px;
+}
+
+/* Hormati pengaturan "kurangi gerakan" milik sistem operasi */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
   }
 }

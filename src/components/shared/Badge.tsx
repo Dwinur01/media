@@ -11,7 +11,7 @@ const colorMap: Record<BadgeColor, string> = {
   gold:  'bg-gold/20 text-gold border-gold/40',
   right: 'bg-right/20 text-right border-right/40',
   wrong: 'bg-wrong/20 text-wrong border-wrong/40',
-  muted: 'bg-muted-line/20 text-paper-text/60 border-muted-line/40',
+  muted: 'bg-muted-line/20 text-paper-text/70 border-muted-line/40',
 }
 
 export function Badge({ label, color = 'muted', className = '' }: BadgeProps) {

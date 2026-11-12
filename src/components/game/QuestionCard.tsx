@@ -33,7 +33,7 @@ export function QuestionCard({
     <div
       className={[
         'relative overflow-hidden rounded-lg bg-white border border-muted-line',
-        'shadow-[0_4px_24px_rgba(15,23,42,0.08),0_0_0_1px_rgba(217,119,6,0.1)]',
+        'shadow-[0_4px_24px_rgba(15,23,42,0.08),0_0_0_1px_rgba(2,132,199,0.1)]',
         className,
       ]
         .filter(Boolean)
@@ -58,13 +58,13 @@ export function QuestionCard({
         <div className="flex items-center justify-between mb-7">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-bg-base border border-gold/40">
             <span className="font-heading text-gold text-sm leading-none">{cat.icon}</span>
-            <span className="font-body text-gold text-[11px] uppercase tracking-[0.2em] font-medium">
+            <span className="font-body text-gold text-sm font-semibold">
               {cat.label}
             </span>
           </div>
 
           {question?.id && (
-            <span className="font-mono text-[10px] text-ink/30 tracking-[0.2em] uppercase">
+            <span className="font-mono text-sm text-ink/70">
               #{question.id}
             </span>
           )}
@@ -77,9 +77,9 @@ export function QuestionCard({
 
         {/* Extra note if any */}
         {note && (
-          <div className="flex items-start gap-3 mt-4 p-4 bg-gold/8 border-l-2 border-gold">
+          <div className="flex items-start gap-3 mt-4 p-4 bg-gold/10 border-l-2 border-gold">
             <span className="text-gold text-sm mt-0.5">ℹ</span>
-            <p className="font-body text-sm text-ink/70 italic leading-relaxed">{note}</p>
+            <p className="font-body text-base text-ink/80 italic leading-relaxed">{note}</p>
           </div>
         )}
 

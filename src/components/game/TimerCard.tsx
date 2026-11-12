@@ -7,6 +7,9 @@ interface TimerCardProps {
   className?: string
 }
 
+const RADIUS = 88
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+
 export function TimerCard({
   timeRemaining = 90,
   duration = 90,
@@ -19,79 +22,71 @@ export function TimerCard({
   const s = timeRemaining % 60
   const timeFormatted = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 
-  const pct = Math.max(0, Math.min(100, (timeRemaining / (duration || 90)) * 100))
-  const isUrgent  = timeRemaining <= 10
+  const fraction = Math.max(0, Math.min(1, timeRemaining / (duration || 90)))
+  const isUrgent = timeRemaining <= 10
   const isWarning = timeRemaining <= 30 && !isUrgent
 
-  const digitColor = isUrgent ? '#DC2626' : isWarning ? '#D97706' : '#1E3A8A'
-  const barClass = isUrgent
-    ? 'from-red-500 to-red-400'
-    : isWarning
-    ? 'from-gold to-gold-soft'
-    : 'from-navy to-blue-500'
+  const ringColor = isUrgent ? '#DC2626' : isWarning ? '#EA580C' : '#1E3A8A'
+  const statusLabel = isRunning ? (isUrgent ? 'Kritis' : 'Berjalan') : 'Dijeda'
 
   return (
     <div
       className={[
-        'relative overflow-hidden bg-white border transition-all duration-500 rounded-lg shadow-sm',
-        isUrgent ? 'border-red-300 shadow-red-100' : 'border-muted-line',
+        'relative overflow-hidden bg-white border transition-colors duration-500 rounded-lg shadow-sm',
+        isUrgent ? 'border-red-300' : 'border-muted-line',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
       {/* Top colored strip */}
-      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${
-        isUrgent ? 'from-red-400 via-red-500 to-red-400' : 'from-transparent via-navy to-transparent'
-      }`} />
-
-      {/* Subtle corner geometry */}
-      <div className="absolute bottom-0 left-0 pointer-events-none opacity-[0.04]">
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-          <polygon points="0,80 80,80 80,0" stroke="#1E3A8A" strokeWidth="2" />
-        </svg>
-      </div>
+      <div
+        className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${
+          isUrgent ? 'from-red-400 via-red-500 to-red-400' : 'from-transparent via-navy to-transparent'
+        }`}
+      />
 
       <div className="relative z-10 p-5 sm:p-6">
         {/* Header row */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-body text-[10px] text-ink/40 uppercase tracking-[0.25em]">
-            Sisa Waktu
-          </span>
-          <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-              isRunning
-                ? isUrgent ? 'bg-red-500 animate-pulse' : 'bg-right animate-pulse'
-                : 'bg-muted-line'
-            }`} />
-            <span className="text-[10px] font-body text-ink/40">
-              {isRunning ? (isUrgent ? 'KRITIS' : 'BERJALAN') : 'DIJEDA'}
-            </span>
-          </div>
-        </div>
-
-        {/* Big countdown digits */}
-        <div
-          role="timer"
-          aria-live="off"
-          aria-label={`Sisa waktu ${timeFormatted}`}
-          className="font-body font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight text-center my-1 transition-colors duration-500 tabular-nums"
-          style={{ color: digitColor }}
-        >
-          {timeFormatted}
-        </div>
-
-        {/* Progress bar */}
-        <div className="mt-5 space-y-1">
-          <div className="w-full h-2 bg-muted-line overflow-hidden rounded-full">
-            <div
-              className={`h-full bg-gradient-to-r ${barClass} transition-all duration-1000 ease-linear rounded-full`}
-              style={{ width: `${pct}%` }}
+        <div className="flex items-center justify-between mb-3">
+          <span className="font-body text-sm text-ink/70 font-medium">Sisa waktu</span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                isRunning ? (isUrgent ? 'bg-red-500 animate-pulse' : 'bg-right animate-pulse') : 'bg-muted-line'
+              }`}
             />
+            <span className="text-sm font-body text-ink/70 font-medium">{statusLabel}</span>
           </div>
-          <div className="flex justify-between text-[9px] font-mono text-ink/30">
-            <span>0</span>
-            <span>{duration}s</span>
+        </div>
+
+        {/* Cincin hitung mundur + angka */}
+        <div className="relative mx-auto w-48 h-48 sm:w-52 sm:h-52 xl:w-56 xl:h-56">
+          <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full -rotate-90" aria-hidden="true">
+            <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="#E2E8F0" strokeWidth="10" />
+            <circle
+              cx="100"
+              cy="100"
+              r={RADIUS}
+              fill="none"
+              stroke={ringColor}
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={CIRCUMFERENCE * (1 - fraction)}
+              style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.5s' }}
+            />
+          </svg>
+          <div
+            role="timer"
+            aria-live="off"
+            aria-label={`Sisa waktu ${timeFormatted}`}
+            className={`absolute inset-0 flex items-center justify-center font-body font-bold text-5xl xl:text-6xl tracking-tight tabular-nums transition-colors duration-500 ${
+              isUrgent && isRunning ? 'animate-pulse' : ''
+            }`}
+            style={{ color: ringColor }}
+          >
+            {timeFormatted}
           </div>
         </div>
 
@@ -101,16 +96,16 @@ export function TimerCard({
             {onToggle && (
               <button
                 onClick={onToggle}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-muted-line hover:border-navy/50 text-ink/50 hover:text-navy transition-all duration-200 font-body uppercase tracking-wider rounded"
+                className="flex items-center gap-2 px-4 h-11 text-sm border border-muted-line hover:border-navy/50 text-ink/80 hover:text-navy transition-all duration-200 font-body font-medium rounded"
               >
                 {isRunning ? (
                   <>
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                     Jeda
                   </>
                 ) : (
                   <>
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
                     Lanjut
                   </>
                 )}
@@ -119,9 +114,9 @@ export function TimerCard({
             {onReset && (
               <button
                 onClick={onReset}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-muted-line hover:border-navy/50 text-ink/50 hover:text-navy transition-all duration-200 font-body uppercase tracking-wider rounded"
+                className="flex items-center gap-2 px-4 h-11 text-sm border border-muted-line hover:border-navy/50 text-ink/80 hover:text-navy transition-all duration-200 font-body font-medium rounded"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                   <path d="M3 3v5h5"/>
                 </svg>

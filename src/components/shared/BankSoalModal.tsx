@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { questions, CATEGORIES } from '../../data/questions'
 import type { QuestionType } from '../../types'
 import { sanitizeSvg } from '../../utils'
@@ -27,6 +27,43 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
     })
   }, [selectedType, searchQuery])
 
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // Esc menutup, Tab terkunci di dalam dialog, fokus kembali ke pemicu saat ditutup
+  useEffect(() => {
+    if (!isOpen) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    dialogRef.current?.focus()
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const active = document.activeElement
+      if (e.shiftKey && (active === first || active === dialogRef.current)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown, true)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown, true)
+      previouslyFocused?.focus?.()
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen) return null
 
   const categoryCounts = {
@@ -39,25 +76,38 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white border border-muted-line rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bank-soal-title"
+        tabIndex={-1}
+        className="bg-white border border-muted-line rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden outline-none animate-slide-up"
+      >
         {/* Header */}
         <div className="p-6 border-b border-muted-line flex items-center justify-between bg-white">
           <div>
             <div className="flex items-center gap-3">
               <span className="text-xl">📚</span>
-              <h2 className="font-heading text-2xl sm:text-3xl text-ink font-semibold">
+              <h2 id="bank-soal-title" className="font-heading text-2xl sm:text-3xl text-ink font-semibold">
                 Bank Soal Pythagoras
               </h2>
             </div>
-            <p className="font-body text-xs sm:text-sm text-ink/60 mt-1">
+            <p className="font-body text-xs sm:text-sm text-ink/70 mt-1">
               {questions.length} Soal Terstandarisasi dalam 5 Kategori (Termasuk Ilustrasi SVG)
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-ink/40 hover:text-ink text-2xl font-bold p-2 transition-colors rounded hover:bg-surface-container"
+            className="text-ink/70 hover:text-ink text-2xl font-bold p-2 transition-colors rounded hover:bg-surface-container"
             title="Tutup"
+            aria-label="Tutup bank soal"
           >
             ✕
           </button>
@@ -104,7 +154,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-2.5 text-xs text-ink/50 hover:text-ink"
+                className="absolute right-3 top-2.5 text-xs text-ink/70 hover:text-ink"
               >
                 Reset
               </button>
@@ -115,7 +165,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
         {/* Soal List Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-bg-base">
           {filteredQuestions.length === 0 ? (
-            <div className="text-center py-12 text-ink/40 font-body">
+            <div className="text-center py-12 text-ink/70 font-body">
               Tidak ada soal yang cocok dengan pencarian atau filter kategori ini.
             </div>
           ) : (
@@ -151,7 +201,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
                       }
                     />
                   </div>
-                  <span className="text-xs text-ink/40 font-mono">
+                  <span className="text-xs text-ink/70 font-mono">
                     ID: {q.id}
                   </span>
                 </div>
@@ -183,7 +233,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
                   </div>
 
                   <div className="bg-surface-container border border-muted-line rounded-lg p-3">
-                    <span className="text-xs text-ink/60 block font-semibold mb-1">
+                    <span className="text-xs text-ink/70 block font-semibold mb-1">
                       Alternatif Diterima:
                     </span>
                     {q.alternativeAnswers && q.alternativeAnswers.length > 0 ? (
@@ -198,7 +248,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
                         ))}
                       </div>
                     ) : (
-                      <span className="text-ink/40 text-xs italic">
+                      <span className="text-ink/70 text-xs italic">
                         Tidak ada alternatif
                       </span>
                     )}
@@ -222,7 +272,7 @@ export function BankSoalModal({ isOpen, onClose }: BankSoalModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-muted-line bg-white flex justify-between items-center text-xs text-ink/60 font-body">
+        <div className="p-4 border-t border-muted-line bg-white flex justify-between items-center text-xs text-ink/70 font-body">
           <span>Menampilkan {filteredQuestions.length} dari {questions.length} soal</span>
           <Button variant="ghost" size="sm" onClick={onClose}>
             Tutup

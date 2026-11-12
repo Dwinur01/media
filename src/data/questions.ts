@@ -86,13 +86,13 @@ function svgTriangle(a: string, b: string, c: string, scale = 1) {
   <!-- Triangle -->
   <polygon points="${px},${py} ${qx},${qy} ${rx},${ry}" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
   <!-- Right angle box -->
-  <rect x="${px}" y="${py - 14}" width="14" height="14" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+  <rect x="${px}" y="${py - 14}" width="14" height="14" fill="none" stroke="#0284C7" stroke-width="1.5"/>
   <!-- Side labels -->
   <text x="${(px + qx) / 2}" y="${py + 16}" text-anchor="middle" font-size="13" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${b}</text>
   <text x="${rx - 16}" y="${(py + ry) / 2}" text-anchor="middle" font-size="13" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${a}</text>
-  <text x="${(qx + rx) / 2 + 12}" y="${(py + ry) / 2 - 4}" text-anchor="middle" font-size="13" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${c}</text>
+  <text x="${(qx + rx) / 2 + 12}" y="${(py + ry) / 2 - 4}" text-anchor="middle" font-size="13" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${c}</text>
   <!-- Label c small -->
-  <text x="${(qx + rx) / 2 + 14}" y="${(py + ry) / 2 + 10}" text-anchor="middle" font-size="9" fill="#C9A227" font-family="Inter,sans-serif">(cari)</text>
+  <text x="${(qx + rx) / 2 + 14}" y="${(py + ry) / 2 + 10}" text-anchor="middle" font-size="9" fill="#0284C7" font-family="Inter,sans-serif">(cari)</text>
 </svg>`
 }
 
@@ -100,10 +100,10 @@ function svgTriangle(a: string, b: string, c: string, scale = 1) {
 function svgRectDiagonal(w: string, h: string, d: string) {
   return `<svg viewBox="0 0 220 150" width="220" height="150" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
   <rect x="20" y="20" width="180" height="110" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
-  <line x1="20" y1="20" x2="200" y2="130" stroke="#C9A227" stroke-width="2" stroke-dasharray="6,3"/>
+  <line x1="20" y1="20" x2="200" y2="130" stroke="#0284C7" stroke-width="2" stroke-dasharray="6,3"/>
   <text x="110" y="142" text-anchor="middle" font-size="12" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${w}</text>
   <text x="210" y="80" text-anchor="start" font-size="12" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${h}</text>
-  <text x="85" y="75" text-anchor="middle" font-size="12" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${d} ?</text>
+  <text x="85" y="75" text-anchor="middle" font-size="12" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${d} ?</text>
 </svg>`
 }
 
@@ -115,18 +115,18 @@ function svgLadder(base: string, height: string, ladder: string) {
   <!-- Wall -->
   <line x1="40" y1="160" x2="40" y2="15" stroke="#0F172A" stroke-width="2.5"/>
   <!-- Ladder -->
-  <line x1="40" y1="40" x2="150" y2="160" stroke="#C9A227" stroke-width="3" stroke-linecap="round"/>
+  <line x1="40" y1="40" x2="150" y2="160" stroke="#0284C7" stroke-width="3" stroke-linecap="round"/>
   <!-- Rungs -->
-  <line x1="53" y1="51" x2="68" y2="66" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
-  <line x1="74" y1="74" x2="89" y2="89" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
-  <line x1="95" y1="97" x2="110" y2="112" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
-  <line x1="116" y1="120" x2="131" y2="135" stroke="#C9A227" stroke-width="1.5" opacity=".5"/>
+  <line x1="53" y1="51" x2="68" y2="66" stroke="#0284C7" stroke-width="1.5" opacity=".5"/>
+  <line x1="74" y1="74" x2="89" y2="89" stroke="#0284C7" stroke-width="1.5" opacity=".5"/>
+  <line x1="95" y1="97" x2="110" y2="112" stroke="#0284C7" stroke-width="1.5" opacity=".5"/>
+  <line x1="116" y1="120" x2="131" y2="135" stroke="#0284C7" stroke-width="1.5" opacity=".5"/>
   <!-- Right angle at wall/ground -->
-  <rect x="40" y="145" width="14" height="14" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+  <rect x="40" y="145" width="14" height="14" fill="none" stroke="#0284C7" stroke-width="1.5"/>
   <!-- Labels -->
   <text x="25" y="105" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${height}</text>
   <text x="98" y="175" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${base}</text>
-  <text x="105" y="90" text-anchor="middle" font-size="11" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${ladder} ?</text>
+  <text x="105" y="90" text-anchor="middle" font-size="11" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${ladder} ?</text>
 </svg>`
 }
 
@@ -141,19 +141,19 @@ function svgShip(north: string, east: string, dist: string) {
   <!-- East path -->
   <line x1="40" y1="40" x2="160" y2="40" stroke="#2E7D5B" stroke-width="2.5" marker-end="url(#ga)"/>
   <!-- Hypotenuse -->
-  <line x1="40" y1="160" x2="160" y2="40" stroke="#C9A227" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="40" y1="160" x2="160" y2="40" stroke="#0284C7" stroke-width="2.5" stroke-dasharray="7,4"/>
   <!-- Right angle -->
-  <rect x="40" y="40" width="14" height="14" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+  <rect x="40" y="40" width="14" height="14" fill="none" stroke="#0284C7" stroke-width="1.5"/>
   <!-- Arrow marker -->
   <defs><marker id="ga" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#2E7D5B"/></marker></defs>
   <!-- Labels -->
   <text x="24" y="105" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${north}</text>
   <text x="102" y="54" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${east}</text>
-  <text x="115" y="115" text-anchor="middle" font-size="11" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${dist} ?</text>
+  <text x="115" y="115" text-anchor="middle" font-size="11" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${dist} ?</text>
   <!-- Points -->
   <circle cx="40" cy="160" r="4" fill="#0F172A"/>
   <circle cx="40" cy="40" r="4" fill="#2E7D5B"/>
-  <circle cx="160" cy="40" r="4" fill="#C9A227"/>
+  <circle cx="160" cy="40" r="4" fill="#0284C7"/>
   <text x="50" y="175" font-size="9" fill="#0F172A" font-family="Inter,sans-serif">Start</text>
 </svg>`
 }
@@ -162,11 +162,11 @@ function svgShip(north: string, east: string, dist: string) {
 function svgSquareDiag(side: string) {
   return `<svg viewBox="0 0 180 180" width="180" height="180" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
   <rect x="20" y="20" width="140" height="140" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
-  <line x1="20" y1="20" x2="160" y2="160" stroke="#C9A227" stroke-width="2" stroke-dasharray="6,3"/>
-  <line x1="160" y1="20" x2="20" y2="160" stroke="#C9A227" stroke-width="2" stroke-dasharray="6,3" opacity=".3"/>
+  <line x1="20" y1="20" x2="160" y2="160" stroke="#0284C7" stroke-width="2" stroke-dasharray="6,3"/>
+  <line x1="160" y1="20" x2="20" y2="160" stroke="#0284C7" stroke-width="2" stroke-dasharray="6,3" opacity=".3"/>
   <text x="90" y="175" text-anchor="middle" font-size="12" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${side}</text>
   <text x="3" y="95" text-anchor="middle" font-size="12" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${side}</text>
-  <text x="98" y="82" text-anchor="middle" font-size="11" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">d = ?</text>
+  <text x="98" y="82" text-anchor="middle" font-size="11" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">d = ?</text>
 </svg>`
 }
 
@@ -174,9 +174,9 @@ function svgSquareDiag(side: string) {
 function svgTriangleFindLeg(hyp: string, knownLeg: string, unknownLabel: string) {
   return `<svg viewBox="0 0 200 150" width="200" height="150" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
   <polygon points="20,130 180,130 20,20" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
-  <rect x="20" y="116" width="14" height="14" fill="none" stroke="#C9A227" stroke-width="1.5"/>
+  <rect x="20" y="116" width="14" height="14" fill="none" stroke="#0284C7" stroke-width="1.5"/>
   <text x="100" y="145" text-anchor="middle" font-size="13" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${knownLeg}</text>
-  <text x="4" y="80" text-anchor="middle" font-size="13" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${unknownLabel} ?</text>
+  <text x="4" y="80" text-anchor="middle" font-size="13" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${unknownLabel} ?</text>
   <text x="118" y="72" text-anchor="middle" font-size="13" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${hyp}</text>
   <text x="120" y="86" text-anchor="middle" font-size="9" fill="#0F172A" opacity=".5" font-family="Inter,sans-serif">(miring)</text>
 </svg>`
@@ -203,7 +203,7 @@ function svgTriangleType(a: number, b: number, c: number) {
   <polygon points="${px},${py} ${qx},${qy} ${rx},${ry}" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
   <text x="${(px + qx) / 2}" y="${py + 14}" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${s2}</text>
   <text x="${(px + rx) / 2 - 8}" y="${(py + ry) / 2}" text-anchor="middle" font-size="11" fill="#0F172A" font-family="Inter,sans-serif" font-weight="600">${s1}</text>
-  <text x="${(qx + rx) / 2 + 8}" y="${(qy + ry) / 2}" text-anchor="middle" font-size="11" fill="#C9A227" font-family="Inter,sans-serif" font-weight="700">${s3}</text>
+  <text x="${(qx + rx) / 2 + 8}" y="${(qy + ry) / 2}" text-anchor="middle" font-size="11" fill="#0284C7" font-family="Inter,sans-serif" font-weight="700">${s3}</text>
 </svg>`
 }
 

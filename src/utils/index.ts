@@ -49,7 +49,8 @@ export function ordinal(n: number): string {
 export { calcScoreDelta, computeScores } from './scoring'
 export { isAnswerCorrect, normalizeAnswer } from './grading'
 export { sanitizeSvg } from './sanitizeSvg'
-export { playBell, playBuzz } from './sound'
+export { playBell, playBuzz, playTick } from './sound'
+export { teamNumber } from './teamNumber'
 export {
   saveSession,
   loadSession,

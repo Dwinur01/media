@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useGame } from '../../context/GameContext'
 import { useCountdown } from '../../hooks/useCountdown'
-import { indexForKey, isAnswerCorrect, playBell, playBuzz } from '../../utils'
+import { indexForKey, isAnswerCorrect, playBell, playBuzz, playTick } from '../../utils'
 import { BankSoalModal } from '../shared'
 import { GameHeader } from './GameHeader'
 import { QuestionCard } from './QuestionCard'
@@ -45,7 +45,7 @@ export function GameScreen() {
         return {
           id: t.id,
           name: t.name,
-          color: t.color || '#D97706',
+          color: t.color || '#0369A1',
           score: s?.score ?? 0,
           correctCount: s?.correctAnswers ?? 0,
         }
@@ -76,6 +76,45 @@ export function GameScreen() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   })
+
+  const urgent = state.phase === 'answering' && running && timeLeft > 0 && timeLeft <= 10
+
+  // Soal baru → kembali ke atas layar (tombol lanjut ada di bagian bawah halaman)
+  useEffect(() => {
+    document.scrollingElement?.scrollTo?.({ top: 0, behavior: 'smooth' })
+  }, [currentQuestion?.id])
+
+  // Tik tiap detik pada 10 detik terakhir
+  useEffect(() => {
+    if (urgent && state.config.soundEffects) playTick()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, urgent])
+
+  // Spasi = jeda / lanjut timer (tidak aktif saat mengetik atau modal terbuka)
+  useEffect(() => {
+    if (state.phase !== 'answering' || buzzedId || showBankSoal) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return
+      const el = e.target as HTMLElement | null
+      if (el && ['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT', 'A'].includes(el.tagName)) return
+      if (el?.isContentEditable) return
+      e.preventDefault()
+      toggle()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [state.phase, buzzedId, showBankSoal, toggle])
+
+  // Setelah "Mulai Menjawab", fokus langsung ke isian tim pertama
+  useEffect(() => {
+    if (state.phase !== 'answering' || buzzer) return
+    // Di HP/tablet, fokus otomatis akan memunculkan keyboard dan menggeser layar: lewati
+    if (!window.matchMedia?.('(pointer: fine)').matches) return
+    const id = window.requestAnimationFrame(() => {
+      document.querySelector<HTMLInputElement>('[data-team-input="0"]')?.focus({ preventScroll: true })
+    })
+    return () => window.cancelAnimationFrame(id)
+  }, [state.phase, buzzer, currentQuestion?.id])
 
   function handleStartAnswering() {
     setPhase('answering')
@@ -182,7 +221,7 @@ export function GameScreen() {
         : `Soal ${qIndex + 1} dari ${totalQuestions}. Baca soal terlebih dahulu.`
 
   return (
-    <div className="min-h-screen bg-bg-base flex flex-col font-body text-paper-text relative overflow-x-hidden">
+    <div className="min-h-screen bg-bg-base flex flex-col font-body text-paper-text relative overflow-x-clip">
       {/* Pengumuman untuk pembaca layar */}
       <div className="sr-only" role="status" aria-live="polite">
         {statusMessage}
@@ -198,23 +237,36 @@ export function GameScreen() {
         totalQuestions={totalQuestions}
         groupCount={state.teams.length}
         onOpenBankSoal={() => setShowBankSoal(true)}
+        timeLeft={state.phase === 'answering' ? timeLeft : undefined}
+        timerRunning={running}
       />
+
+      {/* Denyut tepi layar merah pada 10 detik terakhir */}
+      {urgent && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-30 animate-edge-pulse"
+          style={{ boxShadow: 'inset 0 0 90px 10px rgba(220, 38, 38, 0.5)' }}
+        />
+      )}
 
       <main className="relative z-10 flex-1 w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-14 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
 
         <section className="lg:col-span-8 flex flex-col gap-6">
-          <QuestionCard question={currentQuestion} categoryName={currentQuestion.category} />
+          <div key={currentQuestion.id} className="animate-slide-up">
+            <QuestionCard question={currentQuestion} categoryName={currentQuestion.category} />
+          </div>
 
           {state.phase === 'reading' && (
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-3 text-[11px] font-body text-paper-text/40 uppercase tracking-widest">
+            <div className="flex flex-col-reverse gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center justify-center sm:justify-start gap-3 text-sm font-body text-paper-text/70">
                 <div className="w-6 h-px bg-muted-line" />
                 Baca soal, lalu mulai
                 <div className="w-6 h-px bg-muted-line" />
               </div>
               <button
                 onClick={handleStartAnswering}
-                className="flex items-center gap-2 px-7 py-3 bg-navy hover:bg-navy-hover text-white h-[44px] focus:ring-2 focus:ring-brass focus:ring-offset-2 font-body font-semibold text-sm uppercase tracking-widest transition-all duration-200"
+                className="w-full sm:w-auto justify-center flex items-center gap-2 px-7 py-3 bg-navy hover:bg-navy-hover text-white h-[52px] rounded focus:ring-2 focus:ring-brass focus:ring-offset-2 font-body font-semibold text-base tracking-wide transition-all duration-200"
               >
                 {buzzer ? 'Buka Buzzer' : 'Mulai Menjawab'}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -239,11 +291,19 @@ export function GameScreen() {
             />
           )}
 
+          {revealed && (
+            <RevealPanel
+              answer={currentQuestion.answer}
+              alternativeAnswers={currentQuestion.alternativeAnswers}
+              explanation={currentQuestion.explanation}
+            />
+          )}
+
           {((state.phase === 'answering' && !buzzer) || revealed) && (
             <div className="bg-white border border-muted-line p-6 sm:p-8 shadow-sm rounded-lg">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-px h-4 bg-navy" />
-                <span className="text-[10px] font-body text-navy/60 uppercase tracking-[0.25em]">Arena Jawaban</span>
+                <span className="text-sm font-body text-navy font-semibold">Arena Jawaban</span>
                 <div className="flex-1 h-px bg-muted-line" />
               </div>
               <AnswerGrid
@@ -259,16 +319,9 @@ export function GameScreen() {
             </div>
           )}
 
-          {revealed && (
-            <RevealPanel
-              answer={currentQuestion.answer}
-              alternativeAnswers={currentQuestion.alternativeAnswers}
-              explanation={currentQuestion.explanation}
-            />
-          )}
         </section>
 
-        <aside className="lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-[80px]">
+        <aside className="lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-[88px] lg:max-h-[calc(100vh-104px)] lg:overflow-y-auto lg:pr-1 custom-scrollbar [&>*]:shrink-0">
           <TimerCard
             timeRemaining={timeLeft}
             duration={limit}
@@ -276,25 +329,8 @@ export function GameScreen() {
             onToggle={state.phase === 'answering' ? toggle : undefined}
             onReset={revealed ? undefined : () => reset(limit)}
           />
-          {state.config.showLiveRanking && <LeaderboardPanel groups={groups} />}
-          <GroupsPanel groups={groups} />
-          <div className="border border-muted-line bg-white p-4 text-center rounded-lg shadow-sm">
-            <div className="font-body text-[10px] text-ink/40 uppercase tracking-[0.2em] mb-1">Progress Soal</div>
-            <div className="font-heading text-navy text-2xl font-bold">
-              {qIndex + 1}
-              <span className="text-ink/30 text-base font-normal"> / {totalQuestions}</span>
-            </div>
-            <div className="flex items-center justify-center gap-1 mt-3 flex-wrap">
-              {Array.from({ length: totalQuestions }, (_, i) => (
-                <div
-                  key={i}
-                  className={`rounded-full transition-all duration-300 ${
-                    i < qIndex ? 'w-2 h-2 bg-navy/40' : i === qIndex ? 'w-2.5 h-2.5 bg-navy' : 'w-2 h-2 bg-muted-line'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Satu panel saja: klasemen jika peringkat langsung aktif, kalau tidak daftar tim */}
+          {state.config.showLiveRanking ? <LeaderboardPanel groups={groups} /> : <GroupsPanel groups={groups} />}
         </aside>
       </main>
 

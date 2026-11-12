@@ -1,4 +1,5 @@
 import type { Group } from '../../types'
+import { teamNumber } from '../../utils'
 
 interface GroupsPanelProps {
   groups: Group[]
@@ -24,44 +25,47 @@ export function GroupsPanel({
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-muted-line">
           <div className="flex items-center gap-2.5">
-            <div className="w-[2px] h-4 bg-navy/30" />
-            <span className="font-heading text-ink text-base font-medium tracking-wide">
+            <div className="w-[3px] h-5 bg-navy/30" />
+            <span className="font-heading text-ink text-xl font-semibold tracking-wide">
               Tim Bertanding
             </span>
           </div>
-          <span className="text-[10px] font-body text-ink/40 uppercase tracking-widest">
-            {groups.length} Tim
+          <span className="text-sm font-body text-ink/70">
+            {groups.length} tim
           </span>
         </div>
 
         {/* Team list */}
-        <div className="space-y-1.5 max-h-52 overflow-y-auto pr-0.5">
-          {groups.map((group) => (
-            <div
+        <ul className="space-y-1.5">
+          {groups.map((group, i) => (
+            <li
               key={group.id}
-              className="flex items-center justify-between py-2 px-3 border border-transparent hover:border-muted-line hover:bg-surface-container transition-all duration-150 group rounded"
+              className="flex items-center justify-between py-2 px-3 hover:bg-surface-container transition-colors duration-150 rounded"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div
-                  className="w-2.5 h-2.5 rotate-45 shrink-0 transition-transform duration-200 group-hover:rotate-[90deg]"
-                  style={{ backgroundColor: group.color || '#D97706' }}
-                />
-                <span className="font-body text-xs text-ink/70 truncate group-hover:text-ink transition-colors">
+                <span
+                  className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold"
+                  style={{ backgroundColor: group.color || '#0369A1' }}
+                  aria-hidden="true"
+                >
+                  {teamNumber(group.id) ?? i + 1}
+                </span>
+                <span className="font-body text-base text-ink truncate">
                   {group.name}
                 </span>
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] text-ink/30 font-mono">
+                <span className="text-sm text-ink/70">
                   {group.correctCount}✓
                 </span>
-                <span className="font-body text-xs font-bold text-navy tabular-nums">
+                <span className="font-body text-lg font-bold text-navy tabular-nums">
                   {group.score}
                 </span>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   )

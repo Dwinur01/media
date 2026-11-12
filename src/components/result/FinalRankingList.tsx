@@ -1,4 +1,5 @@
 import type { Group } from '../../types'
+import { teamNumber } from '../../utils'
 
 interface FinalRankingListProps {
   groups: Group[]
@@ -33,11 +34,11 @@ export function FinalRankingList({
           <h3 className="font-heading text-ink text-2xl sm:text-3xl font-normal">
             Klasemen Lengkap
           </h3>
-          <p className="font-body text-[11px] text-gold uppercase tracking-widest mt-0.5 font-semibold">
+          <p className="font-body text-sm text-gold mt-0.5 font-semibold">
             Hasil Akhir Seluruh Kelompok
           </p>
         </div>
-        <div className="font-mono text-[10px] text-ink/30 uppercase tracking-wider">
+        <div className="font-mono text-xs text-ink/70 uppercase tracking-wider">
           {sorted.length} Tim
         </div>
       </div>
@@ -56,7 +57,7 @@ export function FinalRankingList({
               className={[
                 'relative overflow-hidden border transition-all duration-200 rounded-lg',
                 isFirst
-                  ? 'bg-amber-50 border-gold/40'
+                  ? 'bg-sky-50 border-gold/40'
                   : isTop
                   ? 'bg-white border-muted-line hover:border-navy/20'
                   : 'bg-surface-container border-muted-line hover:border-navy/20',
@@ -65,7 +66,7 @@ export function FinalRankingList({
               {/* Left color stripe */}
               <div
                 className="absolute left-0 top-0 bottom-0 w-0.5"
-                style={{ backgroundColor: group.color || '#D97706', opacity: isFirst ? 1 : 0.5 }}
+                style={{ backgroundColor: group.color || '#0369A1', opacity: isFirst ? 1 : 0.5 }}
               />
 
               <div className="pl-5 pr-4 py-3.5">
@@ -77,19 +78,22 @@ export function FinalRankingList({
                       {medal ? (
                         <span className="text-xl">{medal}</span>
                       ) : (
-                        <span className="font-mono text-sm text-ink/30">#{idx + 1}</span>
+                        <span className="font-mono text-sm text-ink/70">#{idx + 1}</span>
                       )}
                     </div>
 
                     {/* Color dot + name */}
                     <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className="w-2.5 h-2.5 rotate-45 shrink-0"
-                        style={{ backgroundColor: group.color || '#D97706' }}
-                      />
+                        className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold"
+                        style={{ backgroundColor: group.color || '#0369A1' }}
+                        aria-hidden="true"
+                      >
+                        {teamNumber(group.id) ?? idx + 1}
+                      </span>
                       <span
                         className={`font-heading text-base sm:text-lg truncate ${
-                          isFirst ? 'text-navy font-bold' : 'text-ink/80'
+                          isFirst ? 'text-navy font-bold' : 'text-ink'
                         }`}
                       >
                         {group.name}
@@ -99,16 +103,16 @@ export function FinalRankingList({
 
                   {/* Score + correct */}
                   <div className="flex items-baseline gap-2 shrink-0">
-                    <span className="text-[11px] text-ink/30 font-body hidden sm:inline">
+                    <span className="text-sm text-ink/70 font-body hidden sm:inline">
                       {group.correctCount} benar
                     </span>
                     <span
-                      className={`font-body font-bold text-lg tabular-nums ${
-                        isFirst ? 'text-navy' : 'text-ink/70'
+                      className={`font-body font-bold text-xl tabular-nums ${
+                        isFirst ? 'text-navy' : 'text-ink'
                       }`}
                     >
                       {group.score}
-                      <span className="text-xs font-normal text-ink/30 ml-1">pts</span>
+                      <span className="text-xs font-normal text-ink/70 ml-1">pts</span>
                     </span>
                   </div>
                 </div>
@@ -134,7 +138,7 @@ export function FinalRankingList({
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-muted-line flex items-center justify-center">
-        <span className="font-body text-[10px] text-ink/30 uppercase tracking-widest">
+        <span className="font-body text-sm text-ink/70">
           — Akhir Pertandingan —
         </span>
       </div>

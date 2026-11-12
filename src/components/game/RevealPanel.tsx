@@ -14,7 +14,7 @@ export function RevealPanel({
   return (
     <div
       className={[
-        'relative overflow-hidden bg-white border border-emerald-300 rounded-lg',
+        'relative overflow-hidden bg-white border border-emerald-300 rounded-lg animate-slide-up',
         'shadow-[0_4px_24px_rgba(16,185,129,0.12)]',
         className,
       ]
@@ -35,7 +35,7 @@ export function RevealPanel({
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 flex items-center justify-center bg-emerald-100 border border-emerald-300 rounded">
-            <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
               <path d="M20 6L9 17l-5-5" />
             </svg>
           </div>
@@ -43,7 +43,7 @@ export function RevealPanel({
             <h3 className="font-heading text-ink text-xl sm:text-2xl font-medium leading-none">
               Kunci Jawaban
             </h3>
-            <p className="font-body text-[10px] text-emerald-600 uppercase tracking-widest mt-0.5">
+            <p className="font-body text-sm text-emerald-700 font-medium mt-1">
               Pembahasan Soal
             </p>
           </div>
@@ -53,7 +53,7 @@ export function RevealPanel({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           {/* Primary answer */}
           <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-lg">
-            <div className="text-[10px] font-body text-emerald-600 uppercase tracking-widest mb-2">
+            <div className="text-sm font-body text-emerald-700 font-medium mb-2">
               Jawaban Utama
             </div>
             <div className="font-heading text-emerald-800 text-3xl sm:text-4xl font-bold leading-none">
@@ -63,7 +63,7 @@ export function RevealPanel({
 
           {/* Alternatives */}
           <div className="p-5 bg-surface-container border border-muted-line rounded-lg">
-            <div className="text-[10px] font-body text-ink/40 uppercase tracking-widest mb-3">
+            <div className="text-sm font-body text-ink/70 font-medium mb-3">
               Variasi Diterima
             </div>
             {alternativeAnswers && alternativeAnswers.length > 0 ? (
@@ -71,14 +71,14 @@ export function RevealPanel({
                 {alternativeAnswers.map((alt) => (
                   <span
                     key={alt}
-                    className="px-2.5 py-1 bg-gold/10 border border-gold/30 text-brass-text text-xs font-body font-medium tracking-wide rounded"
+                    className="px-2.5 py-1 bg-gold/10 border border-gold/30 text-brass-text text-sm font-body font-medium rounded"
                   >
                     {alt}
                   </span>
                 ))}
               </div>
             ) : (
-              <span className="text-[11px] text-ink/40 italic">Hanya jawaban utama</span>
+              <span className="text-sm text-ink/70 italic">Hanya jawaban utama</span>
             )}
           </div>
         </div>
@@ -87,11 +87,11 @@ export function RevealPanel({
         <div className="p-5 bg-surface-container border border-muted-line rounded-lg">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-[2px] h-4 bg-navy" />
-            <span className="text-[10px] font-body text-navy/70 uppercase tracking-widest font-medium">
+            <span className="text-sm font-body text-navy font-semibold">
               Langkah Penyelesaian
             </span>
           </div>
-          <p className="font-body text-sm sm:text-base text-ink/80 leading-relaxed">
+          <p className="font-body text-base sm:text-lg text-ink/80 leading-relaxed">
             {explanation}
           </p>
         </div>

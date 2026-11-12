@@ -28,7 +28,7 @@ export function ProgressBar({
         />
       </div>
       {showLabel && (
-        <p className="text-xs text-paper-text/50 mt-1 text-right font-body">
+        <p className="text-xs text-paper-text/70 mt-1 text-right font-body">
           {clamped.toFixed(0)}%
         </p>
       )}

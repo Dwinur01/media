@@ -47,3 +47,26 @@ export function playBuzz(): void {
     /* audio tidak tersedia — abaikan */
   }
 }
+
+/** Tik pendek tiap detik pada 10 detik terakhir. */
+export function playTick(): void {
+  try {
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AC) return
+    ctx = ctx ?? new AC()
+    void ctx.resume()
+    const now = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'triangle'
+    osc.frequency.value = 1000
+    gain.gain.setValueAtTime(0.0001, now)
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09)
+    osc.connect(gain).connect(ctx.destination)
+    osc.start(now)
+    osc.stop(now + 0.12)
+  } catch {
+    /* audio tidak tersedia — abaikan */
+  }
+}

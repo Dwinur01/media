@@ -6,18 +6,18 @@ import { defaultQuizConfig, sampleQuestions } from '../../data/questions'
 const QUESTION_COUNT = sampleQuestions.length
 
 const DEFAULT_TEAMS_DATA = [
-  { name: 'Tim Hipotenusa', color: '#EAB308', title: 'KELOMPOK I • HIPOTENUSA' },
-  { name: 'Tim Sisi Alas', color: '#06B6D4', title: 'KELOMPOK II • SISI ALAS' },
-  { name: 'Tim Sisi Tegak', color: '#A855F7', title: 'KELOMPOK III • SISI TEGAK' },
-  { name: 'Tim Triple Pythagoras', color: '#F43F5E', title: 'KELOMPOK IV • TRIPLE PYTHAGORAS' },
-  { name: 'Tim Sudut Siku', color: '#10B981', title: 'KELOMPOK V • SUDUT SIKU' },
-  { name: 'Tim Emas Euclidean', color: '#F59E0B', title: 'KELOMPOK VI • EMAS EUCLIDEAN' },
-  { name: 'Tim Segitiga Istimewa', color: '#3B82F6', title: 'KELOMPOK VII • SEGITIGA ISTIMEWA' },
-  { name: 'Tim Teorema Kuno', color: '#EC4899', title: 'KELOMPOK VIII • TEOREMA KUNO' },
-  { name: 'Tim Hipotesis Alpha', color: '#8B5CF6', title: 'KELOMPOK IX • HIPOTESIS ALPHA' },
-  { name: 'Tim Vektor Euclid', color: '#14B8A6', title: 'KELOMPOK X • VEKTOR EUCLID' },
-  { name: 'Tim Archimedes', color: '#F97316', title: 'KELOMPOK XI • ARCHIMEDES' },
-  { name: 'Tim Pythagoras Sempurna', color: '#C9A227', title: 'KELOMPOK XII • PYTHAGORAS' },
+  { name: 'Tim Hipotenusa', color: '#2563EB', title: 'KELOMPOK I • HIPOTENUSA' },
+  { name: 'Tim Sisi Alas', color: '#EA580C', title: 'KELOMPOK II • SISI ALAS' },
+  { name: 'Tim Sisi Tegak', color: '#9333EA', title: 'KELOMPOK III • SISI TEGAK' },
+  { name: 'Tim Triple Pythagoras', color: '#DB2777', title: 'KELOMPOK IV • TRIPLE PYTHAGORAS' },
+  { name: 'Tim Sudut Siku', color: '#0891B2', title: 'KELOMPOK V • SUDUT SIKU' },
+  { name: 'Tim Emas Euclidean', color: '#16A34A', title: 'KELOMPOK VI • EMAS EUCLIDEAN' },
+  { name: 'Tim Segitiga Istimewa', color: '#4F46E5', title: 'KELOMPOK VII • SEGITIGA ISTIMEWA' },
+  { name: 'Tim Teorema Kuno', color: '#DC2626', title: 'KELOMPOK VIII • TEOREMA KUNO' },
+  { name: 'Tim Hipotesis Alpha', color: '#0D9488', title: 'KELOMPOK IX • HIPOTESIS ALPHA' },
+  { name: 'Tim Vektor Euclid', color: '#C026D3', title: 'KELOMPOK X • VEKTOR EUCLID' },
+  { name: 'Tim Archimedes', color: '#65A30D', title: 'KELOMPOK XI • ARCHIMEDES' },
+  { name: 'Tim Pythagoras Sempurna', color: '#57534E', title: 'KELOMPOK XII • PYTHAGORAS' },
 ]
 
 export function SetupScreen() {
@@ -75,7 +75,7 @@ export function SetupScreen() {
   const estimatedMinutes = Math.round((totalQuestions * (timerDuration + 25)) / 60)
 
   return (
-    <div className="bg-bg-base text-ink min-h-screen flex flex-col font-body selection:bg-navy selection:text-white relative overflow-x-hidden">
+    <div className="bg-bg-base text-ink min-h-screen flex flex-col font-body selection:bg-navy selection:text-white relative overflow-x-clip">
       {/* Background Watermark & Grid */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.025] select-none flex items-center justify-center">
         <span className="font-heading text-[22vw] leading-none text-navy">a² + b² = c²</span>
@@ -97,7 +97,7 @@ export function SetupScreen() {
               <span className="font-heading text-xl sm:text-2xl tracking-wider text-ink uppercase block leading-none font-semibold">
                 Kuis Kelompok Pythagoras
               </span>
-              <span className="text-[11px] font-body text-gold uppercase tracking-widest mt-1 block font-medium">
+              <span className="text-xs font-body text-gold uppercase tracking-widest mt-1 block font-medium">
                 Mode Turnamen Kelas • Matematika VIII
               </span>
             </div>
@@ -114,18 +114,21 @@ export function SetupScreen() {
             className="text-ink/70 hover:text-navy transition-colors pb-1 flex items-center gap-1.5"
           >
             <span>Bank Soal</span>
-            <span className="text-[10px] bg-navy/10 text-navy font-bold px-1.5 py-0.5 rounded">{QUESTION_COUNT}</span>
+            <span className="text-xs bg-navy/10 text-navy font-bold px-1.5 py-0.5 rounded">{QUESTION_COUNT}</span>
           </button>
-          <span className="text-ink/40 cursor-not-allowed pb-1">Klasemen</span>
-          <span className="text-ink/40 cursor-not-allowed pb-1">Panduan</span>
         </nav>
 
         {/* Trailing Actions Cluster */}
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 border border-muted-line bg-surface-container text-xs text-ink/70 uppercase tracking-wider rounded">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Bank: {QUESTION_COUNT} Soal Terverifikasi</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowBankSoal(true)}
+            aria-label={`Buka bank soal (${QUESTION_COUNT} soal)`}
+            className="md:hidden flex items-center gap-1.5 px-3 h-11 text-sm font-semibold text-navy border border-muted-line rounded bg-white shadow-sm"
+          >
+            <span aria-hidden="true">📚</span>
+            <span>{QUESTION_COUNT}</span>
+          </button>
           <button
             onClick={() => {
               if (!document.fullscreenElement) {
@@ -134,8 +137,9 @@ export function SetupScreen() {
                 document.exitFullscreen().catch(() => {})
               }
             }}
-            className="p-2 text-ink/60 hover:text-navy transition-colors border border-muted-line hover:border-navy/40 rounded bg-white shadow-sm"
+            className="w-11 h-11 flex items-center justify-center text-ink/70 hover:text-navy transition-colors border border-muted-line hover:border-navy/40 rounded bg-white shadow-sm"
             title="Mode Layar Penuh Proyektor"
+            aria-label="Mode layar penuh"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -185,15 +189,11 @@ export function SetupScreen() {
             <div className="flex items-center gap-2 mb-1.5 text-xs text-gold uppercase tracking-widest font-semibold">
               <span>Konfigurasi Pertandingan Langsung</span>
               <span className="text-muted-line">/</span>
-              <span className="text-ink/50">Fase 1: Setup Parameter</span>
+              <span className="text-ink/70">Fase 1: Setup Parameter</span>
             </div>
             <h1 className="font-heading text-4xl sm:text-5xl text-ink tracking-wide font-normal">
               Ruang Pengaturan Arena Kuis
             </h1>
-          </div>
-          <div className="flex items-center gap-2.5 text-ink/70 text-sm font-body">
-            <span className="text-navy text-lg">📺</span>
-            <span>Output Tampilan: <strong className="text-ink font-semibold">Proyektor Kelas</strong> (1080p 60Hz)</span>
           </div>
         </div>
 
@@ -210,7 +210,7 @@ export function SetupScreen() {
                     Parameter Permainan
                   </h2>
                 </div>
-                <span className="text-xs uppercase tracking-widest text-navy/70 font-mono font-semibold">
+                <span className="text-xs uppercase tracking-widest text-navy font-mono font-semibold">
                   Aturan Kuis Utama
                 </span>
               </div>
@@ -223,13 +223,13 @@ export function SetupScreen() {
                       <label className="text-base font-semibold text-ink block">
                         Jumlah Tim / Kelompok
                       </label>
-                      <p className="text-xs text-ink/60">
+                      <p className="text-xs text-ink/70">
                         Roster aktif yang akan bertanding di papan skor proyektor
                       </p>
                     </div>
                     <div className="flex items-baseline gap-1 bg-white px-3.5 py-1 border border-muted-line rounded shadow-sm">
                       <span className="font-heading text-2xl text-navy font-bold">{groupCount}</span>
-                      <span className="text-xs text-ink/60 font-medium">Kelompok</span>
+                      <span className="text-xs text-ink/70 font-medium">Kelompok</span>
                     </div>
                   </div>
 
@@ -240,19 +240,19 @@ export function SetupScreen() {
                     step={1}
                     value={groupCount}
                     onChange={(e) => handleGroupCountChange(Number(e.target.value))}
-                    className="w-full h-2 bg-muted-line appearance-none cursor-pointer accent-navy rounded-full"
+                    className="range-navy w-full"
                   />
 
                   {/* Quick Selector Pills */}
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px] tracking-wider uppercase text-ink/50 font-semibold">PILIHAN CEPAT:</span>
-                    <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-xs tracking-wider uppercase text-ink/70 font-semibold">PILIHAN CEPAT:</span>
+                    <div className="flex flex-wrap gap-2">
                       {[2, 4, 6, 8, 12].map((n) => (
                         <button
                           key={n}
                           type="button"
                           onClick={() => handleGroupCountChange(n)}
-                          className={`px-3 py-1 text-xs rounded transition-all ${
+                          className={`px-3.5 py-1.5 text-sm rounded transition-all ${
                             groupCount === n
                               ? 'border border-navy bg-navy text-white font-bold shadow-sm'
                               : 'border border-muted-line bg-white text-ink/70 hover:bg-surface-container hover:text-navy'
@@ -272,13 +272,13 @@ export function SetupScreen() {
                       <label className="text-base font-semibold text-ink block">
                         Durasi Waktu Per Soal
                       </label>
-                      <p className="text-xs text-ink/60">
+                      <p className="text-xs text-ink/70">
                         Batas hitung mundur proyektor sebelum sesi pembuktian jawaban dikunci
                       </p>
                     </div>
                     <div className="flex items-baseline gap-1 bg-white px-3.5 py-1 border border-muted-line rounded shadow-sm">
                       <span className="font-heading text-2xl text-navy font-bold">{timerDuration}</span>
-                      <span className="text-xs text-ink/60 font-medium">Detik</span>
+                      <span className="text-xs text-ink/70 font-medium">Detik</span>
                     </div>
                   </div>
 
@@ -289,13 +289,13 @@ export function SetupScreen() {
                     step={5}
                     value={timerDuration}
                     onChange={(e) => setTimerDuration(Number(e.target.value))}
-                    className="w-full h-2 bg-muted-line appearance-none cursor-pointer accent-navy rounded-full"
+                    className="range-navy w-full"
                   />
 
                   {/* Quick Presets */}
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px] tracking-wider uppercase text-ink/50 font-semibold">PRESET WAKTU:</span>
-                    <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="text-xs tracking-wider uppercase text-ink/70 font-semibold">PRESET WAKTU:</span>
+                    <div className="flex flex-wrap gap-2">
                       {[
                         { s: 30, label: '30s (Kilat)' },
                         { s: 45, label: '45s (Standar)' },
@@ -306,7 +306,7 @@ export function SetupScreen() {
                           key={preset.s}
                           type="button"
                           onClick={() => setTimerDuration(preset.s)}
-                          className={`px-2.5 py-1 text-xs rounded transition-all ${
+                          className={`px-3 py-1.5 text-sm rounded transition-all ${
                             timerDuration === preset.s
                               ? 'border border-navy bg-navy text-white font-bold shadow-sm'
                               : 'border border-muted-line bg-white text-ink/70 hover:bg-surface-container hover:text-navy'
@@ -327,7 +327,7 @@ export function SetupScreen() {
                       <label className="text-sm font-semibold text-ink">Total Soal</label>
                       <div className="flex items-baseline gap-1 bg-white px-2.5 py-0.5 border border-muted-line rounded shadow-sm">
                         <span className="font-heading text-xl text-navy font-bold">{totalQuestions}</span>
-                        <span className="text-[10px] text-ink/40">/ {QUESTION_COUNT} Soal</span>
+                        <span className="text-xs text-ink/70">/ {QUESTION_COUNT} Soal</span>
                       </div>
                     </div>
                     <input
@@ -337,9 +337,9 @@ export function SetupScreen() {
                       step={1}
                       value={totalQuestions}
                       onChange={(e) => setTotalQuestions(Number(e.target.value))}
-                      className="w-full h-2 bg-muted-line appearance-none cursor-pointer accent-navy rounded-full"
+                      className="range-navy w-full"
                     />
-                    <div className="flex justify-between text-[11px] text-ink/50">
+                    <div className="flex justify-between text-xs text-ink/70">
                       <span>Min: 5 Soal</span>
                       <span className="text-navy font-medium">Maks Bank: {QUESTION_COUNT} Soal</span>
                     </div>
@@ -351,7 +351,7 @@ export function SetupScreen() {
                       <label className="text-sm font-semibold text-ink">Poin Benar</label>
                       <div className="flex items-baseline gap-1 bg-white px-2.5 py-0.5 border border-muted-line rounded shadow-sm">
                         <span className="font-heading text-xl text-navy font-bold">+{pointsPerCorrect}</span>
-                        <span className="text-[10px] text-ink/60">Poin</span>
+                        <span className="text-xs text-ink/70">Poin</span>
                       </div>
                     </div>
                     <input
@@ -361,9 +361,9 @@ export function SetupScreen() {
                       step={1}
                       value={pointsPerCorrect}
                       onChange={(e) => setPointsPerCorrect(Number(e.target.value))}
-                      className="w-full h-2 bg-muted-line appearance-none cursor-pointer accent-navy rounded-full"
+                      className="range-navy w-full"
                     />
-                    <div className="flex items-center justify-between text-[11px] text-ink/50">
+                    <div className="flex items-center justify-between text-xs text-ink/70">
                       <span>Skala: 1 - 100</span>
                       <label className="flex items-center gap-1.5 cursor-pointer text-navy hover:text-navy-hover font-medium">
                         <input
@@ -389,7 +389,7 @@ export function SetupScreen() {
                     />
                     <div>
                       <span className="text-xs font-semibold text-ink block leading-tight">Peringkat Langsung</span>
-                      <span className="text-[10px] text-ink/50">Tampilkan klasemen selama permainan</span>
+                      <span className="text-xs text-ink/70">Tampilkan klasemen selama permainan</span>
                     </div>
                   </label>
 
@@ -403,7 +403,7 @@ export function SetupScreen() {
                     />
                     <div>
                       <span className="text-xs font-semibold text-ink block leading-tight">Mode Rebutan</span>
-                      <span className="text-[10px] text-ink/50">Tercepat menekan buzzer yang menjawab</span>
+                      <span className="text-xs text-ink/70">Tercepat menekan buzzer yang menjawab</span>
                     </div>
                   </label>
 
@@ -416,7 +416,7 @@ export function SetupScreen() {
                     />
                     <div>
                       <span className="text-xs font-semibold text-ink block leading-tight">Efek Audio Bel</span>
-                      <span className="text-[10px] text-ink/50">Bunyi bel &amp; buzzer</span>
+                      <span className="text-xs text-ink/70">Bunyi bel &amp; buzzer</span>
                     </div>
                   </label>
                 </div>
@@ -436,8 +436,8 @@ export function SetupScreen() {
                       Daftar Tim Bertanding
                     </h2>
                   </div>
-                  <p className="text-xs text-ink/50 mt-1">
-                    Nama dan warna identitas kelompok untuk tampilan proyektor
+                  <p className="text-xs text-ink/70 mt-1">
+                    Nama kelompok tampil di layar proyektor. Warna dan nomor tiap tim dipilih otomatis.
                   </p>
                 </div>
 
@@ -467,26 +467,20 @@ export function SetupScreen() {
                       className="p-3.5 bg-surface-container border border-muted-line hover:border-navy/40 rounded-lg transition-all flex items-center justify-between gap-3 group"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {/* Rotating Square Color Badge */}
+                        {/* Lencana nomor + warna tim (nomor membantu yang sulit membedakan warna) */}
                         <div
-                          className="w-9 h-9 border flex items-center justify-center relative flex-shrink-0 rounded bg-white shadow-sm"
-                          style={{ borderColor: `${color}60` }}
+                          className="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-lg text-white font-heading text-xl font-bold shadow-sm"
+                          style={{ backgroundColor: color }}
+                          aria-hidden="true"
                         >
-                          <span
-                            className="w-3.5 h-3.5 rotate-45 shadow-sm"
-                            style={{ backgroundColor: color }}
-                          />
+                          {i + 1}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-0.5">
-                            <span
-                              className="text-[10px] font-bold uppercase tracking-wider truncate"
-                              style={{ color }}
-                            >
+                            <span className="text-xs font-bold uppercase tracking-wider truncate text-ink/70">
                               {defaultMeta.title}
                             </span>
-                            <span className="text-[10px] text-ink/40">5 Anggota</span>
                           </div>
                           <input
                             type="text"
@@ -516,19 +510,19 @@ export function SetupScreen() {
       </main>
 
       {/* Sticky Footer Action Dock */}
-      <footer className="w-full bg-white/95 backdrop-blur-md border-t border-muted-line px-6 lg:px-16 py-4 sticky bottom-0 z-30 shadow-md">
-        <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="w-full bg-white/95 backdrop-blur-md border-t border-muted-line px-4 sm:px-6 lg:px-16 py-3 md:py-4 sticky bottom-0 z-30 shadow-md">
+        <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
           {/* Left Action: Open Bank Soal */}
           <button
             onClick={() => setShowBankSoal(true)}
-            className="w-full md:w-auto px-5 py-2.5 border border-muted-line text-ink/80 hover:border-navy hover:text-navy bg-white hover:bg-surface-container flex items-center justify-center gap-2.5 transition-all text-sm font-semibold rounded active:scale-[0.99] h-[44px]"
+            className="hidden md:flex w-full md:w-auto px-5 py-2.5 border border-muted-line text-ink/80 hover:border-navy hover:text-navy bg-white hover:bg-surface-container flex items-center justify-center gap-2.5 transition-all text-sm font-semibold rounded active:scale-[0.99] h-[44px]"
           >
             <span className="text-base">📚</span>
             <span>Lihat Bank Soal ({QUESTION_COUNT} Soal)</span>
           </button>
 
           {/* Middle Telemetry Info */}
-          <div className="flex items-center gap-3 text-center">
+          <div className="hidden md:flex items-center gap-3 text-center">
             <div className="flex items-center gap-2 text-xs font-mono text-ink/80 uppercase tracking-widest bg-surface-container px-4 py-2 border border-muted-line rounded">
               <span className="text-navy font-bold">⏱</span>
               <span>Estimasi: ±{estimatedMinutes} Menit</span>
@@ -538,6 +532,11 @@ export function SetupScreen() {
               <span className="text-navy font-bold">{groupCount} Tim Bertanding</span>
             </div>
           </div>
+
+          {/* Ringkasan singkat untuk layar kecil */}
+          <p className="md:hidden text-sm text-ink/70 font-medium">
+            ±{estimatedMinutes} menit · {totalQuestions} soal · {groupCount} tim
+          </p>
 
           {/* Right Action: Launch Game Button */}
           <button
